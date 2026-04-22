@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Astine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e0e;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --border: #2a2a2a;
+    --border-light: #333;
+    --text: #e8e8e8;
+    --text-muted: #888;
+    --text-dim: #555;
+    --accent: #c8c8c8;
+    --tag-bg: #232323;
+    --tag-border: #303030;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(14,14,14,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2.5rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: 0.08em;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+
+  .nav-logo span {
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 0;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border-radius: 2px;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover,
+  .nav-links a.active {
+    color: var(--text);
+  }
+
+  /* PAGES */
+  .page {
+    display: none;
+    min-height: 100vh;
+    padding-top: 56px;
+    flex-direction: column;
+  }
+
+  .page.active {
+    display: flex;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 6rem 2.5rem 5rem;
+    max-width: 900px;
+  }
+
+  .hero-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-title .muted {
+    color: var(--text-dim);
+  }
+
+  .hero-desc {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--text-muted);
+    max-width: 560px;
+    margin-bottom: 2.5rem;
+  }
+
+  /* TAGS */
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.75rem;
+    background: var(--tag-bg);
+    border: 1px solid var(--tag-border);
+    border-radius: 2px;
+    color: var(--text-muted);
+  }
+
+  /* DIVIDER */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    margin: 0 2.5rem;
+    width: calc(100% - 5rem);
+  }
+
+  /* SPEC GRID */
+  .spec-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin: 0 2.5rem;
+  }
+
+  .spec-cell {
+    background: var(--bg);
+    padding: 2rem 2rem;
+  }
+
+  .spec-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 0.6rem;
+  }
+
+  .spec-value {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .spec-sub {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.3rem;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  /* SECTION */
+  .section {
+    padding: 4rem 2.5rem;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1.75rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .feature-item:last-child {
+    border-bottom: none;
+  }
+
+  .feature-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    padding-top: 0.2rem;
+    min-width: 2rem;
+  }
+
+  .feature-content h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+
+  .feature-content p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  /* STATUS BADGE */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0.35rem 0.75rem;
+    background: var(--tag-bg);
+    border: 1px solid var(--tag-border);
+    border-radius: 2px;
+    margin-bottom: 2.5rem;
+  }
+
+  .status-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #6b8f6b;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ABOUT */
+  .about-content {
+    max-width: 680px;
+  }
+
+  .about-content p {
+    font-size: 1rem;
+    line-height: 1.85;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .about-content p strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* GOALS */
+  .goal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .goal-item {
+    display: grid;
+    grid-template-columns: 3rem 1fr auto;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .goal-item:first-child {
+    border-top: 1px solid var(--border);
+  }
+
+  .goal-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+  }
+
+  .goal-text h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+
+  .goal-text p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .goal-status {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  .goal-status.wip {
+    color: #9aaa88;
+    border-color: #3a4a35;
+  }
+
+  /* FOOTER */
+  footer {
+    margin-top: auto;
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: gap;
+    gap: 1rem;
+  }
+
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .footer-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover {
+    color: var(--text-muted);
+  }
+
+  /* LAPTOP VISUAL */
+  .laptop-visual {
+    margin: 0 2.5rem 0;
+    padding: 2.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4rem;
+    flex-wrap: wrap;
+  }
+
+  .laptop-svg-wrap {
+    opacity: 0.7;
+  }
+
+  .laptop-specs-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .inline-spec {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .inline-spec-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .inline-spec-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .big-quote {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+    line-height: 1.3;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+
+  .big-quote .dim {
+    color: var(--text-dim);
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Astine</div>
+  <ul class="nav-links">
+    <li><a href="#" class="active" onclick="showPage('os', this)">AstineOS</a></li>
+    <li><a href="#" onclick="showPage('laptop', this)">Astine ØNE</a></li>
+    <li><a href="#" onclick="showPage('about', this)">About</a></li>
+    <li><a href="#" onclick="showPage('goals', this)">Goals</a></li>
+    <li><a href="#" onclick="showPage('contact', this)">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- PAGE: OS -->
+<div class="page active" id="page-os">
+  <div class="hero">
+    <div class="hero-label">01 / Operating System</div>
+    <h1 class="hero-title">AstineOS<br><span class="muted">Built from the ground up.</span></h1>
+    <div class="status-badge"><span class="status-dot"></span> In active development · 3 years</div>
+    <p class="hero-desc">A Unix-like operating system for x86_64 — and soon aarch64 — built entirely from scratch. Custom kernel, custom desktop environment, custom package manager. No compromises, no corporate agenda.</p>
+    <div class="tags">
+      <span class="tag">x86_64</span>
+      <span class="tag">aarch64 soon</span>
+      <span class="tag">Unix-like</span>
+      <span class="tag">GPLv3</span>
+      <span class="tag">pkine pkg manager</span>
+      <span class="tag">Custom DE</span>
+    </div>
+  </div>
+
+  <div class="spec-grid">
+    <div class="spec-cell">
+      <div class="spec-label">Architecture</div>
+      <div class="spec-value">x86_64</div>
+      <div class="spec-sub">aarch64 support planned — designed with portability in mind from the start.</div>
+    </div>
+    <div class="spec-cell">
+      <div class="spec-label">Package Manager</div>
+      <div class="spec-value">pkine</div>
+      <div class="spec-sub">A self-made package manager for installing programs and services. Currently in progress.</div>
+    </div>
+    <div class="spec-cell">
+      <div class="spec-label">Desktop Environment</div>
+      <div class="spec-value">Custom DE</div>
+      <div class="spec-sub">Built in-house — not GNOME, not KDE. An environment designed specifically for AstineOS.</div>
+    </div>
+    <div class="spec-cell">
+      <div class="spec-label">License</div>
+      <div class="spec-value">GPLv3</div>
+      <div class="spec-sub">Free and open source. Always. The source will be available to everyone.</div>
+    </div>
+    <div class="spec-cell">
+      <div class="spec-label">Design Philosophy</div>
+      <div class="spec-value">Unix-like</div>
+      <div class="spec-sub">Familiar principles, custom implementation. Designed to be understandable and modifiable.</div>
+    </div>
+    <div class="spec-cell">
+      <div class="spec-label">Development Time</div>
+      <div class="spec-value">3+ Years</div>
+      <div class="spec-sub">Started as a high school project and grew into something much bigger.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Core Components</div>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-num">01</div>
+        <div class="feature-content">
+          <h3>pkine — Package Manager</h3>
+          <p>A fully self-written package manager for AstineOS. pkine handles installation, removal, and management of programs and system services. Currently in active development — the goal is a fast, simple, dependency-aware package system that doesn't get in your way.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-num">02</div>
+        <div class="feature-content">
+          <h3>Custom Desktop Environment</h3>
+          <p>No third-party DE. AstineOS ships with a desktop environment designed and built as part of the OS itself — ensuring deep integration, consistent behavior, and a cohesive user experience that can evolve alongside the system.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-num">03</div>
+        <div class="feature-content">
+          <h3>Unix-like Foundation</h3>
+          <p>AstineOS follows Unix principles — everything is a file, small composable tools, clear separation of concerns. Familiar to anyone who has used Linux or BSD, but built from scratch with modern goals in mind.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-num">04</div>
+        <div class="feature-content">
+          <h3>aarch64 Roadmap</h3>
+          <p>The OS is being developed with future ARM support in mind. This pairs directly with the Astine ØNE laptop — eventually, AstineOS will be the native OS for Astine hardware on ARM silicon.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-copy">AstineOS · GPLv3 · In Development</div>
+    <div class="footer-links">
+      <a href="https://discord.gg/b4rEampCnM" target="_blank">Discord</a>
+      <a href="https://www.tiktok.com/@astineelectronics" target="_blank">TikTok</a>
+      <a href="https://github.com/kadir122019-prog" target="_blank">GitHub</a>
+    </div>
+  </footer>
+</div>
+
+<!-- PAGE: LAPTOP -->
+<div class="page" id="page-laptop">
+  <div class="hero">
+    <div class="hero-label">02 / Hardware</div>
+    <h1 class="hero-title">Astine ØNE<br><span class="muted">Your laptop. Forever.</span></h1>
+    <div class="status-badge"><span class="status-dot"></span> In active development</div>
+    <p class="hero-desc">An ARM-based laptop built for real daily work. Lightweight. Efficient. Repairable. When the battery dies, you don't throw it away — you swap it. When a panel dents, you replace it, not the whole machine.</p>
+    <div class="tags">
+      <span class="tag">ARM SoC</span>
+      <span class="tag">Hot-swap Battery</span>
+      <span class="tag">2S Li-Ion</span>
+      <span class="tag">Full Aluminium</span>
+      <span class="tag">Engineered Cooling</span>
+      <span class="tag">Repairability First</span>
+    </div>
+  </div>
+
+  <div class="spec-grid">
+    <div class="spec-cell">
+      <div class="spec-label">Platform</div>
+      <div class="spec-value">ARM-based</div>
+      <div class="spec-sub">Designed around an ARM SoC — chosen for battery efficiency and thermal performance.</div>
+    </div>
+    <div class="spec-cell">
+      <div class="spec-label">Battery System</div>
+      <div class="spec-value">Hot-Swappable</div>
+      <div class="spec-sub">2S Li-Ion pack. When one runs out, pull it out and slot another in — no shutdown required.</div>
+    </div>
+    <div class="spec-cell">
+      <div class="spec-label">Chassis</div>
+      <div class="spec-value">Full Aluminium</div>
+      <div class="spec-sub">Machined aluminium body — not plastic, not composite. Strong, repairable, replaceable panels.</div>
+    </div>
+    <div class="spec-cell">
+      <div class="spec-label">Cooling</div>
+      <div class="spec-value">Well-Engineered</div>
+      <div class="spec-sub">Thermal design built for sustained performance — not just a spec sheet number.</div>
+    </div>
+    <div class="spec-cell">
+      <div class="spec-label">Use Case</div>
+      <div class="spec-value">Daily Driver</div>
+      <div class="spec-sub">Not a concept. Not a demo unit. A real machine for real, everyday work.</div>
+    </div>
+    <div class="spec-cell">
+      <div class="spec-label">Philosophy</div>
+      <div class="spec-value">Buy Once</div>
+      <div class="spec-sub">Designed so you never need to throw it away. Dented panel? Replace it. Dead battery? Swap it.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Design Principles</div>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-num">01</div>
+        <div class="feature-content">
+          <h3>Hot-Swappable Battery</h3>
+          <p>The defining feature. A 2S Li-Ion battery pack that can be removed and replaced without powering down. Running low on a long day? Carry a spare pack and keep going. No proprietary charger required. No "battery health" anxiety after 500 cycles.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-num">02</div>
+        <div class="feature-content">
+          <h3>Full Aluminium Chassis</h3>
+          <p>The body is machined aluminium — not a thin plastic shell that cracks or flexes. Individual panels are designed to be replaceable, so a dent or scratch doesn't mean a new laptop. The structure is meant to last years without degrading.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-num">03</div>
+        <div class="feature-content">
+          <h3>ARM Efficiency</h3>
+          <p>ARM architecture was chosen deliberately for its power efficiency. The goal is real-world battery life that holds up — not a lab benchmark number. Combined with the swappable battery system, the ØNE is built to get through any day.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-num">04</div>
+        <div class="feature-content">
+          <h3>Engineered Cooling</h3>
+          <p>Thermal design is taken seriously. The ØNE's cooling system is engineered around real sustained workloads — not just to pass a short thermal test. The chassis material and internal layout were chosen with heat dissipation as a primary constraint.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-copy">Astine ØNE · ARM Laptop · In Development</div>
+    <div class="footer-links">
+      <a href="https://discord.gg/b4rEampCnM" target="_blank">Discord</a>
+      <a href="https://www.tiktok.com/@astineelectronics" target="_blank">TikTok</a>
+      <a href="https://github.com/kadir122019-prog" target="_blank">GitHub</a>
+    </div>
+  </footer>
+</div>
+
+<!-- PAGE: ABOUT -->
+<div class="page" id="page-about">
+  <div class="hero">
+    <div class="hero-label">03 / About</div>
+    <h1 class="hero-title">Why<br><span class="muted">this exists.</span></h1>
+  </div>
+
+  <div class="section" style="padding-top: 0;">
+    <div class="big-quote">
+      "I got tired of being told to accept a laptop that's <span class="dim">disposable by design.</span>"
+    </div>
+
+    <div class="about-content">
+      <p>I'm a <strong>15-year-old high school student</strong> from Austria. For the past three years, I've been designing an operating system and a laptop — not as a school project, not for a competition — because I genuinely believe the products people rely on every day could be so much better.</p>
+
+      <p>It started with frustration. Every laptop I looked at was a sealed, non-repairable unit: buy it, use it for a few years, throw it away when the battery health drops or the chassis gets dented. <strong>Framework tried to fix this</strong> — I respect what they're doing — but I wasn't satisfied. I had different ideas about what repairability and longevity could look like.</p>
+
+      <p>So I started working on it myself. AstineOS began as an attempt to understand operating systems from the inside out — kernel, package management, desktop environment, all of it written from scratch. The Astine ØNE came out of asking: what would a laptop look like if it was designed around the person using it, not around cost optimization?</p>
+
+      <p><strong>This isn't a business in the traditional sense.</strong> I'm not trying to capture market share or hit revenue targets. I want to make something people genuinely love — something that listens to what users actually say about their machines and tries to address it. If someone says "my battery dies too fast," the answer shouldn't be a slightly bigger battery. It should be a battery you can swap out in seconds.</p>
+
+      <p>I'm building in public, learning as I go, and trying to make both AstineOS and the ØNE actually functional and affordable. This is a long road — but I've already been on it for three years, and I'm not stopping.</p>
+
+      <p style="color: var(--text-dim); font-size: 0.85rem;">— Astine</p>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-copy">Astine · Built by a student</div>
+    <div class="footer-links">
+      <a href="https://discord.gg/b4rEampCnM" target="_blank">Discord</a>
+      <a href="https://www.tiktok.com/@astineelectronics" target="_blank">TikTok</a>
+      <a href="https://github.com/kadir122019-prog" target="_blank">GitHub</a>
+    </div>
+  </footer>
+</div>
+
+<!-- PAGE: GOALS -->
+<div class="page" id="page-goals">
+  <div class="hero">
+    <div class="hero-label">04 / Roadmap</div>
+    <h1 class="hero-title">Goals<br><span class="muted">What comes next.</span></h1>
+    <p class="hero-desc">Both AstineOS and the Astine ØNE are in active development. Here's what the roadmap looks like — in order of what needs to happen first.</p>
+  </div>
+
+  <div class="section" style="padding-top: 0;">
+    <div class="goal-list">
+      <div class="goal-item">
+        <div class="goal-num">01</div>
+        <div class="goal-text">
+          <h3>Finish pkine Package Manager</h3>
+          <p>Complete the core of pkine — dependency resolution, package installation, service management, and a usable repository format. This is the foundation everything else depends on.</p>
+        </div>
+        <div class="goal-status wip">In Progress</div>
+      </div>
+      <div class="goal-item">
+        <div class="goal-num">02</div>
+        <div class="goal-text">
+          <h3>Make AstineOS Daily-Driveable</h3>
+          <p>Reach a point where AstineOS can be used as a primary OS for real, everyday tasks — stable, with working drivers, a functional DE, and enough software available through pkine to cover daily workflows.</p>
+        </div>
+        <div class="goal-status">Planned</div>
+      </div>
+      <div class="goal-item">
+        <div class="goal-num">03</div>
+        <div class="goal-text">
+          <h3>aarch64 Architecture Support</h3>
+          <p>Port AstineOS to ARM (aarch64) — a necessary step for running natively on the Astine ØNE hardware and expanding the OS to the ARM ecosystem.</p>
+        </div>
+        <div class="goal-status">Planned</div>
+      </div>
+      <div class="goal-item">
+        <div class="goal-num">04</div>
+        <div class="goal-text">
+          <h3>Astine ØNE — First Functional Prototype</h3>
+          <p>Build a working prototype of the ØNE laptop — functional hot-swap battery, aluminium chassis, ARM SoC, and cooling system. Not a final product, but something real you can hold and use.</p>
+        </div>
+        <div class="goal-status">Planned</div>
+      </div>
+      <div class="goal-item">
+        <div class="goal-num">05</div>
+        <div class="goal-text">
+          <h3>Make People Satisfied</h3>
+          <p>Listen to feedback, fix what's broken, and keep improving. The goal isn't to ship something and move on — it's to build something people actually enjoy using and come back to. Satisfaction isn't a milestone, it's an ongoing commitment.</p>
+        </div>
+        <div class="goal-status">Ongoing</div>
+      </div>
+      <div class="goal-item">
+        <div class="goal-num">06</div>
+        <div class="goal-text">
+          <h3>Build a Community</h3>
+          <p>Grow a community of people who care about open, repairable, user-first computing. The Discord is the starting point — the goal is a space where users can give real feedback, contributors can help build, and everyone owns a piece of what Astine becomes.</p>
+        </div>
+        <div class="goal-status wip">Growing</div>
+      </div>
+      <div class="goal-item">
+        <div class="goal-num">07</div>
+        <div class="goal-text">
+          <h3>Reasonable Pricing</h3>
+          <p>Make the Astine ØNE available at a price that reflects its quality without being out of reach. This isn't about maximizing margin — it's about making this accessible to the people who need it.</p>
+        </div>
+        <div class="goal-status">Long-term</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top: 0;">
+    <div class="section-label">Join the Project</div>
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+      <a href="https://discord.gg/b4rEampCnM" target="_blank" style="display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.75rem 1.5rem; background: var(--surface2); border: 1px solid var(--border-light); color: var(--text-muted); text-decoration: none; font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 2px; transition: color 0.2s, border-color 0.2s;">Discord Server</a>
+      <a href="https://github.com/kadir122019-prog" target="_blank" style="display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.75rem 1.5rem; background: var(--surface2); border: 1px solid var(--border-light); color: var(--text-muted); text-decoration: none; font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 2px; transition: color 0.2s, border-color 0.2s;">GitHub</a>
+      <a href="https://www.tiktok.com/@astineelectronics" target="_blank" style="display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.75rem 1.5rem; background: var(--surface2); border: 1px solid var(--border-light); color: var(--text-muted); text-decoration: none; font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 2px; transition: color 0.2s, border-color 0.2s;">TikTok</a>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-copy">Astine · 2024–2026 · All rights reserved</div>
+    <div class="footer-links">
+      <a href="https://discord.gg/b4rEampCnM" target="_blank">Discord</a>
+      <a href="https://www.tiktok.com/@astineelectronics" target="_blank">TikTok</a>
+      <a href="https://github.com/kadir122019-prog" target="_blank">GitHub</a>
+    </div>
+  </footer>
+</div>
+
+<!-- PAGE: CONTACT -->
+<div class="page" id="page-contact">
+  <div class="hero">
+    <div class="hero-label">05 / Contact</div>
+    <h1 class="hero-title">Get in<br><span class="muted">touch.</span></h1>
+    <p class="hero-desc">Follow the project, join the community, or check out the source code. All updates, progress, and discussions happen across these three places.</p>
+  </div>
+
+  <div class="section" style="padding-top: 0;">
+    <div class="section-label">Platforms</div>
+    <div class="feature-list">
+
+      <div class="feature-item">
+        <div class="feature-num">01</div>
+        <div class="feature-content">
+          <h3>Discord</h3>
+          <p>The main hub for the community. Join to follow development updates, give feedback, ask questions, or just hang out with others who care about open, repairable computing.</p>
+          <a href="https://discord.gg/b4rEampCnM" target="_blank" style="display: inline-block; margin-top: 1rem; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; padding: 0.4rem 0.9rem; border: 1px solid var(--border-light); border-radius: 2px; background: var(--surface2); transition: color 0.2s;">discord.gg/b4rEampCnM →</a>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-num">02</div>
+        <div class="feature-content">
+          <h3>TikTok</h3>
+          <p>Development videos, progress updates, and behind-the-scenes looks at building AstineOS and the Astine ØNE from scratch as a 15-year-old.</p>
+          <a href="https://www.tiktok.com/@astineelectronics" target="_blank" style="display: inline-block; margin-top: 1rem; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; padding: 0.4rem 0.9rem; border: 1px solid var(--border-light); border-radius: 2px; background: var(--surface2); transition: color 0.2s;">@astineelectronics →</a>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-num">03</div>
+        <div class="feature-content">
+          <h3>GitHub</h3>
+          <p>The source code for AstineOS and related projects lives here. Open under the GPLv3 license — read it, fork it, contribute to it.</p>
+          <a href="https://github.com/kadir122019-prog" target="_blank" style="display: inline-block; margin-top: 1rem; font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; padding: 0.4rem 0.9rem; border: 1px solid var(--border-light); border-radius: 2px; background: var(--surface2); transition: color 0.2s;">github.com/kadir122019-prog →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-copy">Astine · 2024–2026 · All rights reserved</div>
+    <div class="footer-links">
+      <a href="https://discord.gg/b4rEampCnM" target="_blank">Discord</a>
+      <a href="https://www.tiktok.com/@astineelectronics" target="_blank">TikTok</a>
+      <a href="https://github.com/kadir122019-prog" target="_blank">GitHub</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+  function showPage(id, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    if (el) el.classList.add('active');
+    window.scrollTo(0, 0);
+    return false;
+  }
+</script>
+</body>
+</html>
